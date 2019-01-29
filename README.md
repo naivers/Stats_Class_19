@@ -1,7 +1,7 @@
 # Stats_Class_19
 Repository for Applied Data Analysis 
 
-# some random stuff 
+# *some random stuff* 
 these are edits
 
 >*italics*
