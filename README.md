@@ -18,5 +18,7 @@ And yet again, I have made some changes
 
 Edits made through RStudio (text editor)
 
+I guess we are still editing (now in github)
+
 
 
