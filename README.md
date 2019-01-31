@@ -15,3 +15,8 @@ here is some new text for the readme file.
 
 
 And yet again, I have made some changes
+
+Edits made through RStudio (text editor)
+
+
+
