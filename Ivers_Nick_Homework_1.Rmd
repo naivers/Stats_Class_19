@@ -1,0 +1,193 @@
+---
+title: "Homework_1_Anthro_Stats"
+author: "Nick Ivers"
+date: "2/6/2019"
+output: html_document
+---
+
+```
+############### CHALLENGE 1 MODULE 7 #################
+library(stringr)  
+##Bring stringr R package into the working environment
+string1 <- "Four score and seven years ago our fathers brought forth on this continent, a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal." 
+##Create a vector for the complete Abe quote
+
+string1_split <- c(str_split(string1, " ", simplify = TRUE))
+print(string1_split)
+#Split the complete quote-string1-into a vector of one word character strings
+#print vector to make sure it worked
+
+string2 <- string1_split[seq(from = 1, to = 30, by = 3)]
+string2
+##Create a second vector of single word character strings, subsetting every 3rd word from string1
+##print to make sure it worked.
+
+################ CHALLENGE 2 MODULE 7 #####################
+
+m <- matrix(data = 1:80, nrow = 8, ncol = 10, byrow = FALSE)
+m
+#Given the matrix, m, above, extract the 2nd, 3rd, and 6th columns and assign them to the variable x
+x1 <- m[ ,c(2,3,6)]
+x1
+#subset matrix m with brackets. 
+#Row position empty -- not subsetting rows
+#In Column position, subsetting multiple columns, so use concatonate to group them before subsetting.
+
+##Given the matrix, m, above, extract the 6th to 8th row and assign them to the variable x
+
+x2 <- m[c(6,8), ]
+x2
+#subset matrix m with brackets.
+#Column position empty -- not extracting columns
+#In row position, subsetting multiple rows, so use concatonate to group them BEFORE subsetting
+
+##Given the matrix, m, above, extract the elements from row 2, column 2 to row 6, column 9 and assign them to the variable x
+
+x3 <- m5[c(2:6), c(2:9)]
+x3
+
+#subset matrix m with brackets
+#Need both column and row subsets - consider them independently
+#in Rows, concatonate rows 2-6, in Columns, concatonate columns 2-9
+#Result, subset positions 2-2 through 6-9
+
+
+
+################ CHALLENGE 3 MODULE 7 ####################
+#Construct a 4-dimensional, 400 element array (5 x 5 x 4 x 4) named a consisting of the numbers 400 to 1 (i.e., a descending series)
+
+a <- array(data = 400:1, dim = c(5, 5, 4, 4))
+a
+
+#create an array
+#assign values to the array in descending order 400:1
+#create dimension to the array (4D) with 5 x 5 x 4 x 4 dimensions
+#print
+
+a[1, 1, 1, 2]
+#subset at the given position
+# result = 300
+
+a[2, 3, 2, ]
+#subset at the given position
+# result = 364, 264, 164, 64
+
+a[1:5, 1:5, 3, 3]
+#subset at the given position
+# result =      [,1] [,2] [,3] [,4] [,5]
+          #[1,]  150  145  140  135  130
+          #[2,]  149  144  139  134  129
+          #[3,]  148  143  138  133  128
+          #[4,]  147  142  137  132  127
+          #[5,]  146  141  136  131  126
+
+
+################ CHALLENGE 4 MODULE 7 ######################
+
+#Create a list representing the (simplified) primate taxonomy outlined below. HINT: you can use lists as elements in a list.
+
+#Thoughts: create lists of character strings for lowest order
+#name each list
+
+PL <- c("Cebidae", "Atelidae", "Pitheciidae")
+CA <- c("Cercopithecidae", "Hylobatidae", "Hominidae")
+AP <- list(PL, CA)
+names(AP) <- c("PLatyrrhini", "Catarrhini")  
+AP
+#create list for groups in ANthropoidea
+
+
+TS <- list("Tarsiidae")
+names(TS) <- "Tarsioidea"
+TS
+#create list of groups in Tarsioidea
+
+HA <- list(AP, TS)
+names(HA) <- c("Anthropoidea", "Tarsioidea")
+HA
+#create list of Haplorhini, with sub-lists TS and AP
+
+
+LO <- c("Lorisidae", "Galagidae")
+LE <- c("Cheirogaleidae", "Lepilemuridae", "Indriidae", "Lemuridae", "Daubentoniidae")
+ST <- list(LO, LE)
+names(ST) <- c("Lorisoidea", "Lemuroidea")
+ST
+#create list of Strepsirhini with subg-lists LO and LE
+
+PR <- list(HA, ST)
+names(PR) <- c("Haplorhini", "Strepsirhini")
+PR
+#create Primate list by listing sub-lists of HA and ST
+
+taxa <- list(PR)
+names(taxa) <- "Primates"
+taxa
+#to give primate list a name, I place it in a new list (taxa), and then name "Primates list"
+#Now each lowest-order taxa is fit within a nested and named structure
+
+
+################### CHALLENGE 5 MODULE 7 ##################
+
+###Store the following numbers as a 5 x 3 matrix: 3, 0, 1 ,23, 1, 2, 33, 1, 1, 42, 0, 1, 41, 0, 2. Be sure to fill the matrix ROWWISE.
+
+m2 <- matrix(data = c(3, 0, 1 ,23, 1, 2, 33, 1, 1, 42, 0, 1, 41, 0, 2) , nrow = 5, ncol = 3, byrow = TRUE)
+m2
+#create matrix m2
+#provide data
+#assign number of rows and columns
+#specify data should be ordered by row (non-default) with "byrow = TRUE"
+
+###Coerce the matrix to a data frame.
+
+df1 <- data.frame(C1 = m2[ ,1],
+      C2 = m2[ ,2],
+      C3 = m2[ ,3])
+df1
+#create dataframe 1 (df1) 
+#assign column headings by subsetting columns from m2
+#print df1 as verification
+
+###As a data frame, coerce the second column to be logical-valued (Boolean)
+
+
+df1 <- data.frame(C1 = m2[ ,1],
+      C2 = as.logical(m2[ ,2]),
+      C3 = m2[ ,3])
+df1
+#To modify df1 with new data type, overwrite existing df1
+#now assign "as.logical" to column 2 of df1
+
+
+###As a data frame, coerce the third column to be factor-valued
+
+df1 <- data.frame(C1 = m2[ ,1],
+      C2 = as.logical(m2[ ,2]),
+      C3 = as.factor(m2[ ,3]))
+df1
+#To modify df1 with new data type, overwrite existing df1
+#now assign "as.factor" to column 2 of df1
+
+
+str(df1)
+
+#'data.frame':	5 obs. of  3 variables:
+ #$ C1: num  3 23 33 42 41
+ #$ C2: logi  FALSE TRUE TRUE FALSE FALSE
+ #$ C3: Factor w/ 2 levels "1","2": 1 2 1 1 2
+ 
+#
+#
+#
+#
+
+###END of Homework 1 ###
+
+#
+#
+#
+# 
+
+```
+
+
