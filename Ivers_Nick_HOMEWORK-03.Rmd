@@ -1,0 +1,220 @@
+---
+title: "Ivers_Nick_HOMEWORK-03"
+author: "Nick Ivers"
+date: "3/24/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+
+## Homework 3
+
+########     PROBLEM 1   ###########
+# basic outline for a z-test
+# z <- (p2 - p1)/sqrt((pstar * (1 - pstar)) * (1/n1 + 1/n2))
+
+# My code for Problem 1 fails early on with an if/else statement and prevents Knitr from running. If I am able to fix this I will re-submit with the code for problem 1 'knit'
+
+
+
+#Input
+p1 <-
+p2 <- 
+n1 <- length(p1)
+n2 <- length(p2)
+
+Z.prop.test = function(p1, p2 = NULL, n1, n2 = NULL, p0, alternative = "two.sided", conf.level = 0.95){
+  if(p2 = NULL){
+    z <- (phat - pi)/sqrt(pi * (1 - pi)/30)  # we use the population expected proportion in the denominator
+    return(z)
+    
+    p.upper <- 1 - pnorm(z, lower.tail = TRUE)
+    p.lower <- pnorm(z, lower.tail = FALSE)  # two-tailed probability, so we add the upper and lower tails
+    p <- p.upper + p.lower
+    return(p)
+    
+    #boolean
+    crit <- qnorm(1 - alpha/2)  # identify critical values
+    crit
+    test <- abs(z) > crit  # boolean test
+    return(test)
+  } else(p2 != NULL) { 
+  z <- (p2 - p1)/sqrt((pstar * (1 - pstar)) * (1/n1 + 1/n2))
+  return(z)
+  
+  # p-value
+  p.upper <- 1 - pnorm(z, lower.tail = TRUE)
+  p.lower <- pnorm(z, lower.tail = FALSE)  # two-tailed probability, so we add the upper and lower tails
+  p <- p.upper + p.lower
+  return(p)
+  
+  #boolean
+  crit <- qnorm(1 - alpha/2)  # identify critical values
+  crit
+  test <- abs(z) > crit  # boolean test
+  return(test)}
+
+  
+if(n1 * p0 < 5)
+  print("Warning: 'Rule of Thumb - 1' violated.")
+if(n1 * (1-p0) < 5)
+  print("Warning: 'Rule of Thumb - 2' violated.")
+}
+
+
+#######   PROBLEM 2   #########
+```{r}
+library(curl)
+library(tidyverse)
+library(tibble)
+f <- curl("https://raw.githubusercontent.com/difiore/ADA-2019/master/KamilarAndCooperData.csv")
+d <- read.csv(f, header = TRUE, stringsAsFactors = FALSE)
+d <- as_tibble(d)
+attach(d)
+head(d)
+```
+
+```{r}
+x <- MaxLongevity_m
+y <- Brain_Size_Species_Mean
+fit = lm(y~x)
+summary(fit)
+# Estimate Intercept = -65.36266
+# Estimate x = 0.40458
+# Residual Standard Error = 52.4
+# y = -65.36266 + 0.40458x, R^2 = 52.4 
+
+library(ggplot2)
+g <- ggplot(data = d, aes(x  = MaxLongevity_m, y = Brain_Size_Species_Mean))
+g <- g + ggtitle("Brain Size ~ Max Longevity") + theme(plot.title = element_text(hjust = 0.5))
+g <- g + geom_smooth(method = "lm", formula = y ~ x)
+g <- g + geom_point()
+text_lab <- "y = -65.36266 + 0.40458x, R^2 = 52.4" # creates the label for the lm equation
+g <- g + annotate("text", x = 270, y = 400, label = text_lab, color="black", size = 4, parse=FALSE) #used 'annotate' instead of geom_text after 2 + hours of troubleshooting
+g
+```
+
+
+```{r}
+#preparing to add prediction interval
+#need to remove NA values and get MaxLongevity and Brain_Size columns to the same length
+#run independent fit
+d3 <- cbind(d[5])
+d4 <- cbind(d[20])
+d5 <- cbind(d3, d4)
+d5 <- na.omit(d5)
+fit2 = lm(MaxLongevity_m ~ Brain_Size_Species_Mean, data = d5)
+d5 = data.frame(d5, predict(fit2, interval="prediction"))
+d5$residuals = residuals(fit2)
+summary(fit2)
+
+```
+
+
+```{r}
+g3 <- ggplot(data = d5, aes(x  = MaxLongevity_m, y = Brain_Size_Species_Mean))
+g3 <- g3 + geom_smooth(aes(ymin=lwr, ymax=upr, fill = "prediction"), alpha = 0.3)
+g3 <- g3 + ggtitle("Brainsize ~ Max Longevity")
+g3 <- g3 + geom_smooth(method="lm",aes(fill='confidence'),alpha=0.6) 
+g3 <- g3 + geom_smooth(method="lm",se=FALSE,color='blue') 
+g3 <- g3 + geom_point() 
+g3 <- g3 + scale_fill_manual('Interval', values = c('green', 'blue')) 
+text_lab <- "y = -65.36266 + 0.40458x, R^2 = 52.4" # creates the label for the lm equation
+g3 <- g3 + annotate("text", x = 270, y = 400, label = text_lab, color="black", size = 3, parse=FALSE) #used 'annotate' instead of geom_text after 2 + hours of troubleshooting
+g3
+
+
+```
+############  log transformed models  #########
+```{r}
+               log_MaxLongevity <- log(x)
+log_BrainSizeSpecies <- log(y)  
+fit3 <- lm(log_BrainSizeSpecies ~ log_MaxLongevity)
+summary(fit3)
+# Estimate Intercept = -10.5019
+# Estimate x = 2.4703
+# Residual Standard Error = 0.807
+# y = -10.5019 + 2.4703x, R^2 = 0.807
+
+library(ggplot2)
+g2 <- ggplot(data = d, aes(x  = log_MaxLongevity, y = log_BrainSizeSpecies))
+g2 <- g2 + ggtitle("Log Brain Size ~ log Max Longevity") + theme(plot.title = element_text(hjust = 0.5))
+g2 <- g2 + geom_smooth(method = "lm", formula = y ~ x)
+g2 <- g2 + geom_point()
+text_lab <- "y = -10.5019 + 2.4703x, R^2 = 0.807" # creates the label for the lm equation
+g2 <- g2 + annotate("text", x = 5.15, y = 5.5, label = text_lab, color="black", size = 4, parse=FALSE) #used 'annotate' instead of geom_text after 2 + hours of troubleshooting
+g2
+```
+
+##Adding a prediction interval to log transformed samples
+```{r}
+d3 <- cbind(d[5])
+d4 <- cbind(d[20])
+d6 <- cbind(d3, d4)
+d6 <- log(d6)
+d6 <- na.omit(d6)
+fit4 = lm(MaxLongevity_m ~ Brain_Size_Species_Mean, data = d6)
+d6 = data.frame(d6, predict(fit4, interval="prediction"))
+d6$residuals = residuals(fit4)
+summary(fit4)
+# Estimate Intercept = 4.87895
+# Estimate x = 0.23415
+# Residual Standard Error = 0.2485
+# y = 4.87895 + 0.23415x, R^2 = 0.2485
+
+```
+
+
+```{r}
+g4 <- ggplot(data = d6, aes(x  = MaxLongevity_m, y = Brain_Size_Species_Mean))
+g4 <- g4 + geom_smooth(aes(ymin=lwr, ymax=upr, fill = "prediction"), alpha = 0.3)
+g4 <- g4 + ggtitle("log Brainsize ~ log Max Longevity")
+g4 <- g4 + geom_smooth(method="lm",aes(fill='confidence'),alpha=0.6) 
+g4 <- g4 + geom_smooth(method="lm",se=FALSE,color='blue') 
+g4 <- g4 + geom_point() 
+g4 <- g4 + scale_fill_manual('Interval', values = c('green', 'red')) 
+text_lab <- "y = 4.87895 + 0.23415x, R^2 = 0.2485" # creates the label for the lm equation
+g4 <- g4 + annotate("text", x = 5.5, y = 5.5, label = text_lab, color="black", size = 3, parse=FALSE) #used 'annotate' instead of geom_text after 2 + hours of troubleshooting
+g4
+
+```
+
+# point estimate for 800gm brain weight
+
+```{r}
+d3 <- cbind(d[5])
+d4 <- cbind(d[20])
+d7 <- cbind(d3, d4)
+fit5 = lm(MaxLongevity_m ~ Brain_Size_Species_Mean, data = d7)
+
+point_estimate1 <- predict(fit5, newdata = data.frame(Brain_Size_Species_Mean = 800), interval = "confidence", 
+              level = 0.90)  # for a single value
+point_estimate1
+# OUTPUT : fit = 1223.345, lwr = 1089.461, upr = 1357.228
+
+
+```
+
+## Second to last question
+I do not trust this model to make accurate predictions of observations this far outside the mean of the other samples. A value of 800gm for Brain Weight nearly doubles the next highest value, and makes this sample fall well outside the range of the model. The model predicts that an individual with this size of brain will on average have lived 1223.345 years, which is 'hopefully' impossible. More than likely this individual belonged to a different group of monkeys which has a different pattern of growth, and would therefore require a different lineage-specific model for accurate predictions.
+
+
+## Final Question
+
+I think the log transformed model, specifically 'g4' is the most accurate. By log transforming the y-intercept, confidence interval, and prediction interval are all above zero. The non-log-transformed models ('g1' and 'g2') each have intercepts in the negatives, making for unrealistic predictions of young individuals, or those with smaller brain sizes. The log-transformed models also seem to predict the larger/older samples better than non-log-transformed. There does seem to be a substantial number of samples which fall well outside of the confidence interval, which leads me to question the validity of either set of models. 
+
+
+
+
+
+
